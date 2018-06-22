@@ -481,6 +481,7 @@ BOOST_AUTO_TEST_CASE( committee_authority )
    BOOST_CHECK_EQUAL(get_balance(nathan, asset_id_type()(db)), 100000);
 } FC_LOG_AND_RETHROW() }
 
+#if 0
 BOOST_FIXTURE_TEST_CASE( fired_committee_members, database_fixture )
 { try {
    generate_block();
@@ -584,6 +585,7 @@ BOOST_FIXTURE_TEST_CASE( fired_committee_members, database_fixture )
    //Nathan never got any more money because the proposal was rejected.
    BOOST_CHECK_EQUAL(get_balance(*nathan, asset_id_type()(db)), 5000);
 } FC_LOG_AND_RETHROW() }
+#endif
 
 BOOST_FIXTURE_TEST_CASE( proposal_two_accounts, database_fixture )
 { try {
@@ -1041,6 +1043,7 @@ BOOST_FIXTURE_TEST_CASE( bogus_signature, database_fixture )
    FC_LOG_AND_RETHROW()
 }
 
+#if 0
 BOOST_FIXTURE_TEST_CASE( voting_account, database_fixture )
 { try {
    ACTORS((nathan)(vikram));
@@ -1094,6 +1097,7 @@ BOOST_FIXTURE_TEST_CASE( voting_account, database_fixture )
                          db.get_global_properties().active_committee_members.end(),
                          vikram_committee_member) != db.get_global_properties().active_committee_members.end());
 } FC_LOG_AND_RETHROW() }
+#endif
 
 /*
  * Simple corporate accounts:

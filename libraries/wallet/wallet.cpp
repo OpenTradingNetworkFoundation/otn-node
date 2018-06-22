@@ -3703,6 +3703,7 @@ void wallet_api::lock()
 
 void wallet_api::unlock(string password)
 { try {
+   FC_ASSERT( is_locked() );
    FC_ASSERT(password.size() > 0);
    auto pw = fc::sha512::hash(password.c_str(), password.size());
    vector<char> decrypted = fc::aes_decrypt(pw, my->_wallet.cipher_keys);

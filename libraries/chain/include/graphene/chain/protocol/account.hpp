@@ -230,7 +230,7 @@ namespace graphene { namespace chain {
       bool              upgrade_to_lifetime_member = false;
       extensions_type   extensions;
 
-      account_id_type fee_payer()const { return account_to_upgrade; }
+      account_id_type fee_payer()const { return GRAPHENE_COMMITTEE_ACCOUNT; }
       void       validate()const;
       share_type calculate_fee( const fee_parameters_type& k )const;
    };

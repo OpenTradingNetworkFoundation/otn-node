@@ -667,6 +667,7 @@ BOOST_FIXTURE_TEST_CASE( optional_tapos, database_fixture )
    }
 }
 
+#if 0
 BOOST_FIXTURE_TEST_CASE( maintenance_interval, database_fixture )
 {
    try {
@@ -715,7 +716,7 @@ BOOST_FIXTURE_TEST_CASE( maintenance_interval, database_fixture )
       throw;
    }
 }
-
+#endif
 
 BOOST_FIXTURE_TEST_CASE( limit_order_expiration, database_fixture )
 { try {

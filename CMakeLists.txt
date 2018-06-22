@@ -23,7 +23,7 @@ endif()
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules" )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
-set(GRAPHENE_EGENESIS_JSON "${CMAKE_CURRENT_SOURCE_DIR}/genesis.json" )
+#set(GRAPHENE_EGENESIS_JSON "${CMAKE_CURRENT_SOURCE_DIR}/genesis.json" )
 
 #set (ENABLE_INSTALLER 1)
 #set (USE_PCH 1)
@@ -209,3 +209,6 @@ endif(LINUX)
 
  include(CPack)
 endif(ENABLE_INSTALLER)
+
+enable_testing()
+add_test(Chain tests/chain_test --log_level=error)

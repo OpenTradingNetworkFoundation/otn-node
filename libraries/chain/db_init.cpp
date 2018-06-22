@@ -427,10 +427,17 @@ void database::init_genesis(const genesis_state_type& genesis_state)
 
       if( account.is_lifetime_member )
       {
-          account_upgrade_operation op;
-          op.account_to_upgrade = account_id;
-          op.upgrade_to_lifetime_member = true;
-          apply_operation(genesis_eval_state, op);
+         //  account_upgrade_operation op;
+         //  op.account_to_upgrade = account_id;
+         //  apply_operation(genesis_eval_state, op);
+          const account_object* acc = &get(account_id);
+          modify(*acc, [&](account_object& a) {
+            // Upgrade to lifetime member. I don't care what the account was before.
+            a.statistics(*this).process_fees(a, *this);
+            a.membership_expiration_date = time_point_sec::maximum();
+            a.referrer = a.registrar = a.lifetime_referrer = a.get_id();
+            a.lifetime_referrer_fee_percentage = GRAPHENE_100_PERCENT - a.network_fee_percentage;
+          });
       }
    }
 
@@ -450,7 +457,7 @@ void database::init_genesis(const genesis_state_type& genesis_state)
       auto itr = assets_by_symbol.find(symbol);
 
       // TODO: This is temporary for handling BTS snapshot
-      if( symbol == "BTS" )
+      if( symbol == GRAPHENE_SYMBOL )
           itr = assets_by_symbol.find(GRAPHENE_SYMBOL);
 
       FC_ASSERT(itr != assets_by_symbol.end(),

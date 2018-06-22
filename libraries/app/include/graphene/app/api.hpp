@@ -46,6 +46,8 @@
 #include <string>
 #include <vector>
 
+#define GRAPHENE_API_MAX_HISTORY_LIMIT 100
+
 namespace graphene { namespace app {
    using namespace graphene::chain;
    using namespace graphene::market_history;
@@ -102,13 +104,13 @@ namespace graphene { namespace app {
           * @brief Get operations relevant to the specificed account
           * @param account The account whose history should be queried
           * @param stop ID of the earliest operation to retrieve
-          * @param limit Maximum number of operations to retrieve (must not exceed 100)
+          * @param limit Maximum number of operations to retrieve (must not exceed GRAPHENE_API_MAX_HISTORY_LIMIT)
           * @param start ID of the most recent operation to retrieve
           * @return A list of operations performed by account, ordered from most recent to oldest.
           */
          vector<operation_history_object> get_account_history(account_id_type account,
                                                               operation_history_id_type stop = operation_history_id_type(),
-                                                              unsigned limit = 100,
+                                                              unsigned limit = GRAPHENE_API_MAX_HISTORY_LIMIT,
                                                               operation_history_id_type start = operation_history_id_type())const;
 
          /**
@@ -129,7 +131,7 @@ namespace graphene { namespace app {
           * @param account The account whose history should be queried
           * @param operation_id The ID of the operation we want to get operations in the account( 0 = transfer , 1 = limit order create, ...)
           * @param stop ID of the earliest operation to retrieve
-          * @param limit Maximum number of operations to retrieve (must not exceed 100)
+          * @param limit Maximum number of operations to retrieve (must not exceed GRAPHENE_API_MAX_HISTORY_LIMIT)
           * @param start ID of the most recent operation to retrieve
           * @return A list of operations performed by account, ordered from most recent to oldest.
           */
@@ -137,7 +139,7 @@ namespace graphene { namespace app {
                                                                          int operation_id,
                                                                          operation_history_id_type start = operation_history_id_type(),
                                                                          operation_history_id_type stop = operation_history_id_type(),
-                                                                         unsigned limit = 100)const;
+                                                                         unsigned limit = GRAPHENE_API_MAX_HISTORY_LIMIT)const;
 
          /**
           * @breif Get operations relevant to the specified account referenced
@@ -146,15 +148,29 @@ namespace graphene { namespace app {
           * @param account The account whose history should be queried
           * @param stop Sequence number of earliest operation. 0 is default and will
           * query 'limit' number of operations.
-          * @param limit Maximum number of operations to retrieve (must not exceed 100)
+          * @param limit Maximum number of operations to retrieve (must not exceed GRAPHENE_API_MAX_HISTORY_LIMIT)
           * @param start Sequence number of the most recent operation to retrieve.
           * 0 is default, which will start querying from the most recent operation.
           * @return A list of operations performed by account, ordered from most recent to oldest.
           */
          vector<operation_history_object> get_relative_account_history( account_id_type account,
                                                                         uint32_t stop = 0,
-                                                                        unsigned limit = 100,
+                                                                        unsigned limit = GRAPHENE_API_MAX_HISTORY_LIMIT,
                                                                         uint32_t start = 0) const;
+
+         /**
+          * @breif Get operations relevant to the specified account referenced
+          * by an event numbering specific to the account. The current number of operations
+          * for the account can be found in the account statistics (or use 0 for start).
+          * @param account The account whose history should be queried
+          * @param start Sequence number of earliest operation. 0 is default and will
+          * query 'limit' number of operations starting from the oldest operation.
+          * @param limit Maximum number of operations to retrieve (must not exceed GRAPHENE_API_MAX_HISTORY_LIMIT)
+          * @return A list of operations performed by account, ordered from oldest to most recent.
+          */
+         vector<operation_history_object> get_chrono_relative_history( account_id_type account,
+                                                                        uint32_t start = 0,
+                                                                        unsigned limit = GRAPHENE_API_MAX_HISTORY_LIMIT) const;
 
          vector<order_history_object> get_fill_order_history( asset_id_type a, asset_id_type b, uint32_t limit )const;
          vector<bucket_object> get_market_history( asset_id_type a, asset_id_type b, uint32_t bucket_seconds,
@@ -411,6 +427,7 @@ FC_API(graphene::app::history_api,
        (get_account_history_by_operations)
        (get_account_history_operations)
        (get_relative_account_history)
+       (get_chrono_relative_history)
        (get_fill_order_history)
        (get_market_history)
        (get_market_history_buckets)

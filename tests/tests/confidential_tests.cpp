@@ -47,7 +47,8 @@ BOOST_AUTO_TEST_CASE( confidential_test )
    const asset_object& core = asset_id_type()(db);
 
    transfer(account_id_type()(db), dan, core.amount(1000000));
-
+   upgrade_to_lifetime_member(dan);
+   upgrade_to_lifetime_member(nathan);
    transfer_to_blind_operation to_blind;
    to_blind.amount = core.amount(1000);
    to_blind.from   = dan.id;

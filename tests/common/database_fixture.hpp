@@ -35,6 +35,11 @@
 
 using namespace graphene::db;
 
+// maximum supported precision (8 digits)
+#define GRAPHENE_MAX_PRECISION uint64_t( 100000000 )
+// scale amount specified with maximum precision to the current precision
+#define GRAPHENE_SCALE_AMOUNT(x) ((x)/(GRAPHENE_MAX_PRECISION/GRAPHENE_BLOCKCHAIN_PRECISION))
+
 extern uint32_t GRAPHENE_TESTING_GENESIS_TIMESTAMP;
 
 #define PUSH_TX \

@@ -39,6 +39,7 @@ void_result asset_create_evaluator::do_evaluate( const asset_create_operation& o
 
    database& d = db();
 
+   FC_ASSERT( op.issuer(d).is_lifetime_member(), "Only lifetime members can create asset" );
    const auto& chain_parameters = d.get_global_properties().parameters;
    FC_ASSERT( op.common_options.whitelist_authorities.size() <= chain_parameters.maximum_asset_whitelist_authorities );
    FC_ASSERT( op.common_options.blacklist_authorities.size() <= chain_parameters.maximum_asset_whitelist_authorities );
@@ -428,6 +429,7 @@ void_result asset_update_feed_producers_evaluator::do_apply(const asset_update_f
 void_result asset_global_settle_evaluator::do_evaluate(const asset_global_settle_evaluator::operation_type& op)
 { try {
    const database& d = db();
+
    asset_to_settle = &op.asset_to_settle(d);
    FC_ASSERT(asset_to_settle->is_market_issued());
    FC_ASSERT(asset_to_settle->can_global_settle());
@@ -455,8 +457,10 @@ void_result asset_global_settle_evaluator::do_apply(const asset_global_settle_ev
 void_result asset_settle_evaluator::do_evaluate(const asset_settle_evaluator::operation_type& op)
 { try {
    const database& d = db();
+
    asset_to_settle = &op.amount.asset_id(d);
    FC_ASSERT(asset_to_settle->is_market_issued());
+   FC_ASSERT(asset_to_settle->issuer == op.account);
    const auto& bitasset = asset_to_settle->bitasset_data(d);
    FC_ASSERT(asset_to_settle->can_force_settle() || bitasset.has_settlement() );
    if( bitasset.is_prediction_market )

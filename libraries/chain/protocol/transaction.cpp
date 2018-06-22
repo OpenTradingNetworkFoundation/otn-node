@@ -382,8 +382,10 @@ void signed_transaction::verify_authority(
    const std::function<const authority*(account_id_type)>& get_active,
    const std::function<const authority*(account_id_type)>& get_owner,
    uint32_t max_recursion )const
-{ try {
+{ 
+   auto sig_dig = sig_digest( chain_id );
+   try {
    graphene::chain::verify_authority( operations, get_signature_keys( chain_id ), get_active, get_owner, max_recursion );
-} FC_CAPTURE_AND_RETHROW( (*this) ) }
+} FC_CAPTURE_AND_RETHROW( (*this)(sig_dig) ) }
 
 } } // graphene::chain

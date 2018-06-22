@@ -300,7 +300,7 @@ namespace graphene { namespace app {
     {
        FC_ASSERT( _app.chain_database() );
        const auto& db = *_app.chain_database();
-       FC_ASSERT( limit <= 100 );
+       FC_ASSERT( limit <= GRAPHENE_API_MAX_HISTORY_LIMIT );
        vector<operation_history_object> result;
        const auto& stats = account(db).statistics(db);
        if( stats.most_recent_op == account_transaction_history_id_type() ) return result;
@@ -333,7 +333,7 @@ namespace graphene { namespace app {
     {
        FC_ASSERT( _app.chain_database() );
        const auto& db = *_app.chain_database();
-       FC_ASSERT( limit <= 100 );
+       FC_ASSERT( limit <= GRAPHENE_API_MAX_HISTORY_LIMIT );
        vector<operation_history_object> result;
        const auto& stats = account(db).statistics(db);
        if( stats.most_recent_op == account_transaction_history_id_type() ) return result;
@@ -368,7 +368,7 @@ namespace graphene { namespace app {
     {
        FC_ASSERT( _app.chain_database() );
        const auto& db = *_app.chain_database();
-       FC_ASSERT(limit <= 100);
+       FC_ASSERT(limit <= GRAPHENE_API_MAX_HISTORY_LIMIT);
        vector<operation_history_object> result;
        const auto& stats = account(db).statistics(db);
        if( start == 0 )
@@ -395,6 +395,32 @@ namespace graphene { namespace app {
        return result;
     }
 
+    vector<operation_history_object> history_api::get_chrono_relative_history( account_id_type account,
+                                                                               uint32_t start,
+                                                                               unsigned limit) const
+    {
+       FC_ASSERT( _app.chain_database() );
+       FC_ASSERT( limit <= GRAPHENE_API_MAX_HISTORY_LIMIT);
+       const auto& db = *_app.chain_database();
+       const auto& stats = account(db).statistics(db);
+       vector<operation_history_object> result;
+
+       start = max( stats.removed_ops, start );
+       if( stats.total_ops < start || limit == 0 )
+         return result;
+
+       const auto& hist_idx = db.get_index_type<account_transaction_history_index>();
+       const auto& by_seq_idx = hist_idx.indices().get<by_seq>();
+
+       auto itr = by_seq_idx.lower_bound(boost::make_tuple( account, start ));
+       auto itr_stop = by_seq_idx.upper_bound( boost::make_tuple( account, stats.total_ops ) );
+
+       for ( ; itr != itr_stop && result.size() < limit; ++itr )
+          result.push_back( itr->operation_id(db) );
+
+       return result;
+    }
+
     flat_set<uint32_t> history_api::get_market_history_buckets()const
     {
        auto hist = _app.get_plugin<market_history_plugin>( "market_history" );
@@ -404,7 +430,7 @@ namespace graphene { namespace app {
 
     history_operation_detail history_api::get_account_history_by_operations(account_id_type account, vector<uint16_t> operation_types, uint32_t start, unsigned limit)
     {
-        FC_ASSERT(limit <= 100);
+        FC_ASSERT(limit <= GRAPHENE_API_MAX_HISTORY_LIMIT);
         history_operation_detail result;
         vector<operation_history_object> objs = get_relative_account_history(account, start, limit, limit + start - 1);
         std::for_each(objs.begin(), objs.end(), [&](const operation_history_object &o) {

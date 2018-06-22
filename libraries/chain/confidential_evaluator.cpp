@@ -37,6 +37,9 @@ void_result transfer_to_blind_evaluator::do_evaluate( const transfer_to_blind_op
 { try {
    const auto& d = db();
 
+   const account_object& acc = o.from(d);
+   FC_ASSERT( acc.is_lifetime_member(),
+             "Only lifetime members can perform operations with blinded accounts" );
    const auto& atype = o.amount.asset_id(db()); 
    FC_ASSERT( atype.allow_confidential() );
    FC_ASSERT( !atype.is_transfer_restricted() );
@@ -83,6 +86,10 @@ void_result transfer_from_blind_evaluator::do_evaluate( const transfer_from_blin
 { try {
    const auto& d = db();
    o.fee.asset_id(d);  // verify fee is a legit asset 
+   const account_object& acc = o.to(d);
+   FC_ASSERT( acc.is_lifetime_member(),
+             "Only lifetime members can perform operations with blinded accounts" );
+
    const auto& bbi = d.get_index_type<blinded_balance_index>();
    const auto& cidx = bbi.indices().get<by_commitment>();
    for( const auto& in : o.inputs )

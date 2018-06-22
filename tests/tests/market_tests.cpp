@@ -49,6 +49,7 @@ BOOST_AUTO_TEST_CASE(issue_338)
    set_expiration( db, trx );
 
    ACTORS((buyer)(seller)(borrower)(feedproducer));
+   upgrade_to_lifetime_member(feedproducer_id);
 
    const auto& bitusd = create_bitasset("USDBIT", feedproducer_id);
    const auto& core   = asset_id_type()(db);

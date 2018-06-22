@@ -919,14 +919,15 @@ void database_fixture::upgrade_to_lifetime_member( const account_object& account
 {
    try
    {
-      account_upgrade_operation op;
-      op.account_to_upgrade = account.get_id();
-      op.upgrade_to_lifetime_member = true;
-      op.fee = db.get_global_properties().parameters.current_fees->calculate_fee(op);
-      trx.operations = {op};
-      db.push_transaction(trx, ~0);
-      FC_ASSERT( op.account_to_upgrade(db).is_lifetime_member() );
-      trx.clear();
+      // upgrade account via database modification, cause lifetime upgrade normally
+      // should be performed via proposal routine
+      const account_object* acc = &db.get(account.get_id());
+      db.modify(*acc, [&](account_object& a) {
+         a.statistics(db).process_fees(a, db);
+         a.membership_expiration_date = time_point_sec::maximum();
+         a.referrer = a.registrar = a.lifetime_referrer = a.get_id();
+         a.lifetime_referrer_fee_percentage = GRAPHENE_100_PERCENT - a.network_fee_percentage;
+      });
       verify_asset_supplies(db);
    }
    FC_CAPTURE_AND_RETHROW((account))

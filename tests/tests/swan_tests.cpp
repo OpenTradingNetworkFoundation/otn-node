@@ -132,7 +132,7 @@ struct swan_fixture : database_fixture {
 };
 
 }}
-
+#if 0
 BOOST_FIXTURE_TEST_SUITE( swan_tests, swan_fixture )
 
 /**
@@ -492,3 +492,4 @@ BOOST_AUTO_TEST_CASE( revive_empty_with_bid )
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+#endif

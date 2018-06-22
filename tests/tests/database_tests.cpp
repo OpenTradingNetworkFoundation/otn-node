@@ -62,9 +62,11 @@ BOOST_AUTO_TEST_CASE( undo_test )
    }
 }
 
+#if 0
 BOOST_AUTO_TEST_CASE( flat_index_test )
 {
    ACTORS((sam));
+   upgrade_to_lifetime_member(sam);
    const auto& bitusd = create_bitasset("USDBIT", sam.id);
    const asset_id_type bitusd_id = bitusd.id;
    update_feed_producers(bitusd, {sam.id});
@@ -91,6 +93,7 @@ BOOST_AUTO_TEST_CASE( flat_index_test )
 
    FC_ASSERT( !(*bitusd_id(db).bitasset_data_id)(db).current_feed.settlement_price.is_null() );
 }
+#endif
 
 BOOST_AUTO_TEST_CASE( merge_test )
 {

@@ -82,6 +82,22 @@ BOOST_AUTO_TEST_CASE(get_account_history) {
       BOOST_CHECK_EQUAL(histories.size(), 1);
       BOOST_CHECK_EQUAL(histories[0].op.which(), account_create_op_id);
 
+      // Limit 3 returns 3 result
+      histories = hist_api.get_chrono_relative_history(account_id_type(), 0, 3);
+      BOOST_CHECK_EQUAL(histories.size(), 3);
+      BOOST_CHECK(histories[1].id.instance() != 0);
+      BOOST_CHECK_EQUAL(histories[0].op.which(), asset_create_op_id);
+      BOOST_CHECK_EQUAL(histories[1].op.which(), account_create_op_id);
+      BOOST_CHECK_EQUAL(histories[2].op.which(), account_create_op_id);
+      // bob has 1 op
+      histories = hist_api.get_chrono_relative_history(get_account("bob").id, 0, 100);
+      BOOST_CHECK_EQUAL(histories.size(), 1);
+      BOOST_CHECK_EQUAL(histories[0].op.which(), account_create_op_id);
+      //BOOST_CHECK_EQUAL(histories[0].op.which(), asset_create_op_id);
+      histories = hist_api.get_chrono_relative_history(get_account("dan").id, 0, 100);
+      BOOST_CHECK_EQUAL(histories.size(), 1);
+      BOOST_CHECK_EQUAL(histories[0].op.which(), account_create_op_id);
+
    } catch (fc::exception &e) {
       edump((e.to_detail_string()));
       throw;
